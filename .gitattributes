@@ -1,0 +1,22 @@
+# Normalize text files to LF in the repo; checkout as-is.
+* text=auto eol=lf
+
+*.v    text
+*.sv   text
+*.svh  text
+*.vh   text
+*.vhd  text
+*.tcl  text
+*.sdc  text
+*.qsf  text
+*.md   text
+*.json text
+*.py   text
+*.sh   text
+
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.pdf  binary
+*.sof  binary
+*.vcd  binary

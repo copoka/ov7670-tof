@@ -1,0 +1,103 @@
+# ===========================================================================
+# ov7670-tof — .gitignore
+#
+# CREDENTIAL SAFETY: токены, пароли, ключи, .env и прочие секреты НЕ коммитятся.
+# Если файл может содержать секрет — он здесь. Проверяй `git status` перед push.
+# ===========================================================================
+
+# ---- секреты / креды ------------------------------------------------------
+.env
+.env.*
+*.env
+secrets/
+secret/
+*.secret
+*credentials*
+*credential*
+*_token*
+*token*.txt
+.netrc
+.npmrc
+.pypirc
+id_rsa
+id_ed25519*
+id_ecdsa*
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+*password*
+*passwd*
+*.kdbx
+.htpasswd
+
+# ---- Quartus II / Prime build outputs -------------------------------------
+db/
+incremental_db/
+build/
+build_*/
+output_files/
+*.qpf
+*.qws
+*.qwr
+*.qdf
+*.qxp
+*.qar
+*.rpt
+*.fit.rpt
+*.map.rpt
+*.sta.rpt
+*.flow.rpt
+*.asm.rpt
+*.smsg
+*.jdi
+*.jic
+*.jbc
+*.sof
+*.pof
+*.rbf
+*.jam
+*.cdf
+*.sld
+*.done
+*.summary
+*.pin
+*.log
+
+# ---- симуляция / волновые формы -------------------------------------------
+sim/
+*.vcd
+*.fst
+*.ghw
+*.wlf
+*.vstf
+*.lxt
+*.lxt2
+obj_dir/
+*.o
+*.a
+a.out
+
+# ---- Python ---------------------------------------------------------------
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+
+# ---- Node / OpenCode ------------------------------------------------------
+node_modules/
+.opencode/node_modules/
+.opencode/package-lock.json
+
+# ---- OS / редакторы -------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/

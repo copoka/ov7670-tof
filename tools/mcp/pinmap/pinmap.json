@@ -1,0 +1,1358 @@
+{
+ "board": "OMDAZZ Cyclone IV",
+ "devices": {
+  "camera": {
+   "model": "OV7670 (QQVGA 160x120)",
+   "iface": "DVP 8-бит + SCCB (I2C-совместимый)",
+   "config": {
+    "table": "ov7670_regs (REGS_TABLE=0) — полная RGB565, AGC/AEC ON, гамма, AWB (проверено 001/002)",
+    "format": "RGB565 (2 байта/пиксель), QQVGA 160x120",
+    "luma": "для серого вывода: (R + 2G + B)/4",
+    "warning": "урезанная ov7670_regs_yuv (AGC/AEC OFF) даёт тёмный кадр (max ~73) — для «вида камеры» не годится"
+   },
+   "notes": "ПОДТВЕРЖДЕНО 2026-10-22: кадр снимается полностью (19200/19200 байт), QR с листа бумаги виден на TFT (прошивка top_cam_tft)."
+  },
+  "monitor": {
+   "model": "TFT 240x320, 2.4\", 40-pin",
+   "controller": "ILI9341-совместимый (работает на железе 2026-10-22; ID не читается — панель write-only)",
+   "iface": "Intel-80, 16-бит DB[15:0] + CS/RS/WR/RD, только запись",
+   "power": {
+    "vcc": "5V платы",
+    "gnd": "GND платы"
+   },
+   "config": {
+    "COLMOD": "0x55 (16 bpp, RGB565)",
+    "MADCTL": "0x08 (BGR + портрет) — панель нативно BGR; без 0x08 красный/синий меняются местами",
+    "cmd_lane": "DB[7:0] (команды на младшем байте)",
+    "window": "CASET 0x00..0xEF (0..239), PASET 0x0000..0x013F (0..319), задавать явно",
+    "pixel_write": "1 пиксель = 1 16-битная запись; RAMWR (0x2C) перед заливкой"
+   },
+   "notes": "ПОДТВЕРЖДЕНО на железе 2026-10-22: (1) заливка/кольца/тест углов — цвета и ориентация верные; (2) кадр с OV7670 выводится на TFT (прошивка top_cam_tft, QR с листа виден). Write-only: RDDID/RDID1..3 читаются как 0x00 (RD# не возвращает данные). Питание VCC→5V, GND→GND (2026-10-21). Подсветка горит при high-Z, ПЛИС не управляется. Рабочие прошивки: top_tft_colors / top_tft_rings / top_cam_tft (эксперимент 004)."
+  },
+  "monitor_touch": {
+   "model": "TSC2046",
+   "iface": "SPI (clk/cs/din/do + PENIRQ)",
+   "notes": "прочитан с шелкографии модуля (003, 2026-09-15); SPI-команды совместимы с XPT2046/HR2046"
+  },
+  "monitor_sd": {
+   "model": "SD-карта на 40-pin модуле",
+   "iface": "SPI",
+   "notes": "на стенде может не использоваться; линии 103..105 делятся с данными камеры"
+  },
+  "telemetry": {
+   "model": "CH342 (WCH, USB dual serial)",
+   "iface": "UART 115200 8N1, /dev/ttyACM1 (канал 0)",
+   "notes": "кадр 8-бит отдаётся строками G<addr> <16 hex>"
+  }
+ },
+ "fpga": "EP4CE6E22C8",
+ "package": "EQFP-144",
+ "generated_from": "experiments/004_rolling_shutter/build_cam_tft/cam_tft.pin",
+ "notes": [
+  "kind: io | power | gnd | config | clock | unknown",
+  "stand[].optional = линия описана для устройства, но может не использоваться",
+  "devices = модели/интерфейсы подключённых модулей",
+  "board = штатная функция вывода на плате (pinout/pinmap.md)"
+ ],
+ "pins": [
+  {
+   "pin": 1,
+   "kind": "io",
+   "bank": 1,
+   "board": "LCD D1",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_wr_n",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 2,
+   "kind": "io",
+   "bank": 1,
+   "board": "LCD D4",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db3",
+     "optional": false
+    },
+    {
+     "device": "monitor_touch",
+     "signal": "tp_cs_n",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 3,
+   "kind": "io",
+   "bank": 1,
+   "board": "LCD D3",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_rs",
+     "optional": false
+    },
+    {
+     "device": "monitor_touch",
+     "signal": "tp_clk",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 4,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 5,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 6,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 7,
+   "kind": "io",
+   "bank": 1,
+   "board": "LCD D6",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db1",
+     "optional": false
+    },
+    {
+     "device": "monitor_touch",
+     "signal": "tp_din",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 8,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 9,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 10,
+   "kind": "io",
+   "bank": 1,
+   "board": "LCD D5",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db2",
+     "optional": false
+    },
+    {
+     "device": "monitor_touch",
+     "signal": "tp_do",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 11,
+   "kind": "io",
+   "bank": 1,
+   "board": "LCD D7",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db0",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 12,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 13,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 14,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 15,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 16,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 17,
+   "kind": "power",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 18,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 19,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 20,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 21,
+   "kind": "config",
+   "bank": 1,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 22,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 23,
+   "kind": "clock",
+   "bank": 1,
+   "board": "FPGA_CLK 50 MHz",
+   "stand": [
+    {
+     "device": "board",
+     "signal": "clk",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 24,
+   "kind": "gnd",
+   "bank": 2,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 25,
+   "kind": "clock",
+   "bank": 2,
+   "board": "RESET button",
+   "stand": [
+    {
+     "device": "board",
+     "signal": "rst_n",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 26,
+   "kind": "power",
+   "bank": 2,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 27,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 28,
+   "kind": "io",
+   "bank": 2,
+   "board": "SDRAM DQ0",
+   "stand": []
+  },
+  {
+   "pin": 29,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 30,
+   "kind": "io",
+   "bank": 2,
+   "board": "SDRAM DQ1",
+   "stand": []
+  },
+  {
+   "pin": 31,
+   "kind": "io",
+   "bank": 2,
+   "board": "SDRAM DQ2",
+   "stand": []
+  },
+  {
+   "pin": 32,
+   "kind": "io",
+   "bank": 2,
+   "board": "SDRAM DQ3",
+   "stand": []
+  },
+  {
+   "pin": 33,
+   "kind": "io",
+   "bank": 2,
+   "board": "SDRAM DQ4",
+   "stand": []
+  },
+  {
+   "pin": 34,
+   "kind": "io",
+   "bank": 2,
+   "board": "SDRAM DQ5",
+   "stand": []
+  },
+  {
+   "pin": 35,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 36,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 37,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 38,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ6",
+   "stand": []
+  },
+  {
+   "pin": 39,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ7",
+   "stand": []
+  },
+  {
+   "pin": 40,
+   "kind": "power",
+   "bank": 3,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 41,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 42,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM LDQM",
+   "stand": [
+    {
+     "device": "telemetry",
+     "signal": "uart_tx",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 43,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM CLK",
+   "stand": []
+  },
+  {
+   "pin": 44,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ15",
+   "stand": []
+  },
+  {
+   "pin": 45,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 46,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ14",
+   "stand": []
+  },
+  {
+   "pin": 47,
+   "kind": "power",
+   "bank": 3,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 48,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 49,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ13",
+   "stand": []
+  },
+  {
+   "pin": 50,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ12",
+   "stand": []
+  },
+  {
+   "pin": 51,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ11",
+   "stand": []
+  },
+  {
+   "pin": 52,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ10",
+   "stand": []
+  },
+  {
+   "pin": 53,
+   "kind": "io",
+   "bank": 3,
+   "board": "SDRAM DQ9",
+   "stand": []
+  },
+  {
+   "pin": 54,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM DQ8",
+   "stand": []
+  },
+  {
+   "pin": 55,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM UDQM",
+   "stand": []
+  },
+  {
+   "pin": 56,
+   "kind": "power",
+   "bank": 4,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 57,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 58,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM CKE",
+   "stand": []
+  },
+  {
+   "pin": 59,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM A11",
+   "stand": []
+  },
+  {
+   "pin": 60,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM A9",
+   "stand": []
+  },
+  {
+   "pin": 61,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 62,
+   "kind": "power",
+   "bank": 4,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 63,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 64,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM A8",
+   "stand": []
+  },
+  {
+   "pin": 65,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM A7",
+   "stand": []
+  },
+  {
+   "pin": 66,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM A6",
+   "stand": []
+  },
+  {
+   "pin": 67,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM A5",
+   "stand": []
+  },
+  {
+   "pin": 68,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM A4",
+   "stand": []
+  },
+  {
+   "pin": 69,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM WE#",
+   "stand": []
+  },
+  {
+   "pin": 70,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM CAS#",
+   "stand": []
+  },
+  {
+   "pin": 71,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM RAS#",
+   "stand": []
+  },
+  {
+   "pin": 72,
+   "kind": "io",
+   "bank": 4,
+   "board": "SDRAM CS#",
+   "stand": []
+  },
+  {
+   "pin": 73,
+   "kind": "io",
+   "bank": 5,
+   "board": "SDRAM BS0",
+   "stand": []
+  },
+  {
+   "pin": 74,
+   "kind": "io",
+   "bank": 5,
+   "board": "SDRAM BS1",
+   "stand": []
+  },
+  {
+   "pin": 75,
+   "kind": "io",
+   "bank": 5,
+   "board": "SDRAM A10",
+   "stand": []
+  },
+  {
+   "pin": 76,
+   "kind": "io",
+   "bank": 5,
+   "board": "SDRAM A0",
+   "stand": []
+  },
+  {
+   "pin": 77,
+   "kind": "io",
+   "bank": 5,
+   "board": "SDRAM A1",
+   "stand": []
+  },
+  {
+   "pin": 78,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 79,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 80,
+   "kind": "io",
+   "bank": 5,
+   "board": "SDRAM A2",
+   "stand": []
+  },
+  {
+   "pin": 81,
+   "kind": "power",
+   "bank": 5,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 82,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 83,
+   "kind": "io",
+   "bank": 5,
+   "board": "SDRAM A3",
+   "stand": []
+  },
+  {
+   "pin": 84,
+   "kind": "io",
+   "bank": 5,
+   "board": "LED4",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_scl",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 85,
+   "kind": "io",
+   "bank": 5,
+   "board": "LED3",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_sda",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 86,
+   "kind": "io",
+   "bank": 5,
+   "board": "LED2",
+   "stand": [
+    {
+     "device": "board",
+     "signal": "led3_n",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 87,
+   "kind": "io",
+   "bank": 5,
+   "board": "LED1",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_xclk",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 88,
+   "kind": "io",
+   "bank": 5,
+   "board": "KEY1 / DIP ckey1",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_vsync",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 89,
+   "kind": "io",
+   "bank": 5,
+   "board": "KEY2 / DIP ckey2",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_href",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 90,
+   "kind": "io",
+   "bank": 6,
+   "board": "KEY3 / DIP ckey3",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_pclk",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 91,
+   "kind": "gnd",
+   "bank": 6,
+   "board": "KEY4 / DIP ckey4",
+   "stand": [
+    {
+     "device": "board",
+     "signal": "key4_n",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 92,
+   "kind": "config",
+   "bank": 6,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 93,
+   "kind": "power",
+   "bank": 6,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 94,
+   "kind": "config",
+   "bank": 6,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 95,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 96,
+   "kind": "config",
+   "bank": 6,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 97,
+   "kind": "config",
+   "bank": 6,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 98,
+   "kind": "io",
+   "bank": 6,
+   "board": "I2C_SDA (AT24C08)",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_d7",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 99,
+   "kind": "io",
+   "bank": 6,
+   "board": "I2C_SCL (AT24C08)",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_d6",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 100,
+   "kind": "io",
+   "bank": 6,
+   "board": "IR receiver",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_d5",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 101,
+   "kind": "io",
+   "bank": 6,
+   "board": "VGA_HSYNC (nCEO!)",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_d4",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 102,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 103,
+   "kind": "io",
+   "bank": 6,
+   "board": "VGA_VSYNC",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_d3",
+     "optional": false
+    },
+    {
+     "device": "monitor_sd",
+     "signal": "sd_clk",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 104,
+   "kind": "io",
+   "bank": 6,
+   "board": "VGA_B",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_d2",
+     "optional": false
+    },
+    {
+     "device": "monitor_sd",
+     "signal": "sd_cs_n",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 105,
+   "kind": "io",
+   "bank": 6,
+   "board": "VGA_G",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_d1",
+     "optional": false
+    },
+    {
+     "device": "monitor_sd",
+     "signal": "sd_din",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 106,
+   "kind": "io",
+   "bank": 6,
+   "board": "VGA_R",
+   "stand": [
+    {
+     "device": "camera",
+     "signal": "cam_d0",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 107,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 108,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 109,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 110,
+   "kind": "io",
+   "bank": 7,
+   "board": "Buzzer",
+   "stand": []
+  },
+  {
+   "pin": 111,
+   "kind": "io",
+   "bank": 7,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 112,
+   "kind": "io",
+   "bank": 7,
+   "board": "I2C SCL",
+   "stand": []
+  },
+  {
+   "pin": 113,
+   "kind": "io",
+   "bank": 7,
+   "board": "I2C SDA",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_res_n",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 114,
+   "kind": "io",
+   "bank": 7,
+   "board": "UART TXD",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_cs_n",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 115,
+   "kind": "io",
+   "bank": 7,
+   "board": "UART RXD",
+   "stand": []
+  },
+  {
+   "pin": 116,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 117,
+   "kind": "power",
+   "bank": 7,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 118,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 119,
+   "kind": "io",
+   "bank": 7,
+   "board": "PS2 CLOCK",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db15",
+     "optional": false
+    },
+    {
+     "device": "monitor_touch",
+     "signal": "tp_irq",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 120,
+   "kind": "io",
+   "bank": 7,
+   "board": "PS2 DATA",
+   "stand": [
+    {
+     "device": "monitor_sd",
+     "signal": "sd_do",
+     "optional": true
+    }
+   ]
+  },
+  {
+   "pin": 121,
+   "kind": "io",
+   "bank": 7,
+   "board": "7-seg SEG1",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db14",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 122,
+   "kind": "power",
+   "bank": 7,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 123,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 124,
+   "kind": "io",
+   "bank": 7,
+   "board": "7-seg SEG6",
+   "stand": []
+  },
+  {
+   "pin": 125,
+   "kind": "io",
+   "bank": 7,
+   "board": "7-seg SEG2",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db13",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 126,
+   "kind": "io",
+   "bank": 7,
+   "board": "7-seg SEG5",
+   "stand": []
+  },
+  {
+   "pin": 127,
+   "kind": "io",
+   "bank": 7,
+   "board": "7-seg SEG7",
+   "stand": []
+  },
+  {
+   "pin": 128,
+   "kind": "io",
+   "bank": 8,
+   "board": "7-seg SEG0",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db12",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 129,
+   "kind": "io",
+   "bank": 8,
+   "board": "7-seg SEG3",
+   "stand": []
+  },
+  {
+   "pin": 130,
+   "kind": "power",
+   "bank": 8,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 131,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 132,
+   "kind": "io",
+   "bank": 8,
+   "board": "7-seg SEG4",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db11",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 133,
+   "kind": "io",
+   "bank": 8,
+   "board": "7-seg DIG1",
+   "stand": []
+  },
+  {
+   "pin": 134,
+   "kind": "power",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 135,
+   "kind": "io",
+   "bank": 8,
+   "board": "7-seg DIG2",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db10",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 136,
+   "kind": "io",
+   "bank": 8,
+   "board": "7-seg DIG3",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db7",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 137,
+   "kind": "io",
+   "bank": 8,
+   "board": "7-seg DIG4",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db9",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 138,
+   "kind": "io",
+   "bank": 8,
+   "board": "LCD RW",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db6",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 139,
+   "kind": "power",
+   "bank": 8,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 140,
+   "kind": "gnd",
+   "bank": null,
+   "board": "",
+   "stand": []
+  },
+  {
+   "pin": 141,
+   "kind": "io",
+   "bank": 8,
+   "board": "LCD RS",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db8",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 142,
+   "kind": "io",
+   "bank": 8,
+   "board": "LCD D0",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db5",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 143,
+   "kind": "io",
+   "bank": 8,
+   "board": "LCD E",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_rd_n",
+     "optional": false
+    }
+   ]
+  },
+  {
+   "pin": 144,
+   "kind": "io",
+   "bank": 8,
+   "board": "LCD D2",
+   "stand": [
+    {
+     "device": "monitor",
+     "signal": "tft_db4",
+     "optional": false
+    },
+    {
+     "device": "strobe",
+     "signal": "light_out",
+     "optional": false
+    }
+   ]
+  }
+ ]
+}

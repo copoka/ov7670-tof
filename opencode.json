@@ -1,0 +1,41 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "mcp": {
+    "servers": {
+      "web-search": {
+        "type": "local",
+        "command": ["/usr/bin/node", "/home/l/projects/web-search/build/index.js"]
+      },
+      "sequentialthinking": {
+        "type": "local",
+        "command": [
+          "/usr/bin/node",
+          "/usr/local/lib/node_modules/@modelcontextprotocol/server-sequential-thinking/dist/index.js"
+        ]
+      },
+      "context7": {
+        "type": "local",
+        "command": [
+          "/usr/bin/node",
+          "/usr/local/lib/node_modules/@upstash/context7-mcp/dist/index.js"
+        ]
+      },
+      "filesystem": {
+        "type": "local",
+        "command": [
+          "/usr/bin/node",
+          "/usr/local/lib/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
+          "/home/l/projects/ov7670-tof"
+        ]
+      },
+      "pinmap": {
+        "type": "local",
+        "command": [
+          "/usr/bin/python3",
+          "/home/l/projects/ov7670-tof/tools/mcp/pinmap/server.py"
+        ]
+      }
+    }
+  }
+}
